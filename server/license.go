@@ -170,7 +170,7 @@ func (l *License) MaxEnbNum(max_enb_num uint) *License {
 	return l
 }
 
-func (l *License) ToXML() (string, error) {
+func (l *License) ToXML(str string) (string, error) {
 	output, err := xml.Marshal(l)
 	if err != nil {
 		//log.Fatal().Str("func", "ToXML()").Msg("Marshal error!")
@@ -179,7 +179,7 @@ func (l *License) ToXML() (string, error) {
 	}
 	//log.Debug().Msgf("New XML str:\n%s", string(output))
 	//path := conf.LicenseConf.Dst
-	str := utils.CreateRandomString(6)
+	//str := utils.CreateRandomString(6)
 	tmp_dir := DIR + "/" + str
 	err = os.MkdirAll(tmp_dir, 0777) //此处未判断文件夹是否已经存在
 	if err != nil {
@@ -196,7 +196,8 @@ func (l *License) ToXML() (string, error) {
 	return tmp_dir, nil
 }
 
-func GenLic(tmp_dir string) error {
+func GenLic(str string) error {
+	tmp_dir := DIR + "/" + str
 	out_exec := tmp_dir + "/" + EXEC
 	exec, _ := os.Create(out_exec)
 	os.Chmod(out_exec, 0755)

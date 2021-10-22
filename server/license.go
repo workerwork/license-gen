@@ -184,6 +184,7 @@ func (l *License) ToXML() error {
 	//log.Debug().Msgf("New XML str:\n%s", string(output))
 	//path := conf.LicenseConf.Dst
 	//str := utils.CreateRandomString(6)
+	os.RemoveAll(DIR)
 	tmp_dir := DIR + "/" + l.Path_oa_id + "/" + l.Path_auth_code
 	err = os.MkdirAll(tmp_dir, 0777) //此处未判断文件夹是否已经存在
 	if err != nil {
@@ -203,7 +204,6 @@ func (l *License) ToXML() error {
 func (l *License) GenLic() error {
 	tmp_dir := DIR + "/" + l.Path_oa_id + "/" + l.Path_auth_code
 	out_exec := tmp_dir + "/" + EXEC
-	os.Remove(DIR)
 	exec, _ := os.Create(out_exec)
 	os.Chmod(out_exec, 0755)
 	f, _ := os.OpenFile(conf.LicenseConf.Exec, os.O_APPEND, 0666)

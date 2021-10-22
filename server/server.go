@@ -25,17 +25,20 @@ func run() {
 			if err != nil {
 				return
 			}
-			lic.XmlNs(data.Product)
-			lic.Code(data.Product)
-			lic.ProductVersion(item.Version)
-			lic.AuthCode(item.Auth_code)
-			lic.CreateTime()
-			lic.TotalTime(item.Total_time)
-			lic.MaxUeNum(item.Max_ue_num)
-			lic.MaxEnbNum(item.Max_enb_num)
+			lic.XmlNs(data.Product).
+				Code(data.Product).
+				ProductVersion(item.Version).
+				AuthCode(item.Auth_code).
+				CreateTime().
+				TotalTime(item.Total_time).
+				MaxUeNum(item.Max_ue_num).
+				MaxEnbNum(item.Max_enb_num)
 			//fmt.Println(lic)
-			lic.ToXML()
-			lic.GenLic()
+			tmp_dir, err := lic.ToXML()
+			if err != nil {
+				return
+			}
+			GenLic(tmp_dir)
 		}()
 	}
 }

@@ -22,12 +22,13 @@ const (
 	XML_NP  string = "http://www.baicells.com/product"
 )
 
+/*
 var (
 	Tmp_dir  string
 	Out_exec string
 	Out_xml  string
 	Out_bin  string
-)
+)*/
 
 type Product struct {
 	Code        string `xml:"code"`
@@ -47,7 +48,7 @@ type Parameters struct {
 }
 
 type License struct {
-	XMLName xml.Name `xml:"license"`
+	XMLName    xml.Name   `xml:"license"`
 	XMLNs      string     `xml:"xmlns,attr"`
 	Product    Product    `xml:"product"`
 	Parameters Parameters `xml:"parameters"`
@@ -169,40 +170,41 @@ func (l *License) MaxEnbNum(max_enb_num uint) *License {
 	return l
 }
 
-func (l *License) ToXML() (*License, error) {
+func (l *License) ToXML() (string, error) {
 	output, err := xml.Marshal(l)
 	if err != nil {
 		//log.Fatal().Str("func", "ToXML()").Msg("Marshal error!")
 		log.Error().Err(err).Str("func", "ToXML()").Msg("Marshal error!")
-		return nil, err
+		return "", err
 	}
 	//log.Debug().Msgf("New XML str:\n%s", string(output))
 	//path := conf.LicenseConf.Dst
 	str := utils.CreateRandomString(6)
-	Tmp_dir = DIR + "/" + str
-	err = os.MkdirAll(Tmp_dir, 0777) //此处未判断文件夹是否已经存在
+	tmp_dir := DIR + "/" + str
+	err = os.MkdirAll(tmp_dir, 0777) //此处未判断文件夹是否已经存在
 	if err != nil {
 		log.Error().Err(err).Str("func", "ToXML()").Msg("创建文件路径失败!")
-		return nil, err
+		return "", err
 	}
-	Out_xml = Tmp_dir + "/" + XML_OUT
-	err = ioutil.WriteFile(Out_xml, output, 0666)
+	out_xml := tmp_dir + "/" + XML_OUT
+	err = ioutil.WriteFile(out_xml, output, 0666)
 	if err != nil {
 		log.Error().Err(err).Str("func", "ToXML()").Msg("WriteFile error!")
-		return nil, err
+		return tmp_dir, err
 	}
-	log.Info().Str("path", Out_xml).Msg("Marshal to XML file success!")
-	return l, nil
+	log.Info().Str("path", out_xml).Msg("Marshal to XML file success!")
+	return tmp_dir, nil
 }
 
-func (l *License) GenLic() error {
-	Out_exec = Tmp_dir + "/" + EXEC
-	exec, _ := os.Create(Out_exec)
-	os.Chmod(Out_exec, 0755)
+func GenLic(tmp_dir string) error {
+	out_exec := tmp_dir + "/" + EXEC
+	exec, _ := os.Create(out_exec)
+	os.Chmod(out_exec, 0755)
 	f, _ := os.OpenFile(conf.LicenseConf.Exec, os.O_APPEND, 0666)
 	io.Copy(exec, f)
 	exec.Close()
-	cmd := Out_exec + " -E " + Out_xml
+	out_xml := tmp_dir + "/" + XML_OUT
+	cmd := out_exec + " -E " + out_xml
 	log.Info().Str("cmd", cmd).Msgf("Starting exec cmd!...")
 	//time.Sleep(time.Duration(2)*time.Second)
 	err := utils.Run(cmd)
@@ -210,7 +212,7 @@ func (l *License) GenLic() error {
 		log.Error().Err(err).Str("func", "GenLic()").Msg("GenLic error!")
 		return err
 	}
-	Out_bin = Tmp_dir + "/" + LIC_BIN
-	os.Rename(Tmp_dir+"/"+XML_ENC, Out_bin)
+	out_bin := tmp_dir + "/" + LIC_BIN
+	os.Rename(tmp_dir+"/"+XML_ENC, out_bin)
 	return nil
 }

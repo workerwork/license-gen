@@ -34,8 +34,8 @@ func run() {
 			lic.MaxUeNum(item.Max_ue_num)
 			lic.MaxEnbNum(item.Max_enb_num)
 			//fmt.Println(lic)
-            lic.ToXML()
-            lic.GenLic()
+			lic.ToXML()
+			lic.GenLic()
 		}()
 	}
 }

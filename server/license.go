@@ -221,9 +221,6 @@ func (l *License) GenLic() error {
 	os.Rename(tmp_dir+"/"+XML_ENC, out_bin)
 	os.Remove(out_exec)
 	os.Remove(out_xml)
+	utils.Zip(out_bin, out_bin+".zip")
 	return nil
 }
-
-/*func (l *License) TarFile() error {
-    tmp_dir := DIR + "/" + l.Path_oa_id + "/" + l.Path_auth_code
-}*/

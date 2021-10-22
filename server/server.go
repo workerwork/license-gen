@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-var lock sync.Mutex
 var wg sync.WaitGroup
 var data = Data{}
 
@@ -22,14 +21,11 @@ func run() {
 	if err != nil {
 		return
 	}
-    /*
 	for _, item := range data.Item_list {
 		wg.Add(1)
-		lock.Lock()
 		go func() {
 			lic, err := NewLic()
 			if err != nil {
-				lock.Unlock()
 				wg.Done()
 				return
 			}
@@ -45,21 +41,18 @@ func run() {
 				PathOaId(data.Oa_id).
 				PathAuthCode(item.Auth_code)
 			if err := lic.ToXML(); err != nil {
-				lock.Unlock()
 				wg.Done()
 				return
 			}
 			if err := lic.GenLic(); err != nil {
-				lock.Unlock()
 				wg.Done()
 				return
 			}
-			lock.Unlock()
 			wg.Done()
 		}()
 		wg.Wait()
 		//TODO
-	}*/
+	}
 	advise_result := AdviseResult{
 		Oa_id:         data.Oa_id,
 		Apply_type:    data.Apply_type,

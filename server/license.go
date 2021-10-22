@@ -22,14 +22,6 @@ const (
 	XML_NP  string = "http://www.baicells.com/product"
 )
 
-/*
-var (
-	Tmp_dir  string
-	Out_exec string
-	Out_xml  string
-	Out_bin  string
-)*/
-
 type Product struct {
 	Code        string `xml:"code"`
 	Version     string `xml:"version"`
@@ -48,10 +40,12 @@ type Parameters struct {
 }
 
 type License struct {
-	XMLName    xml.Name   `xml:"license"`
-	XMLNs      string     `xml:"xmlns,attr"`
-	Product    Product    `xml:"product"`
-	Parameters Parameters `xml:"parameters"`
+	XMLName        xml.Name   `xml:"license"`
+	XMLNs          string     `xml:"xmlns,attr"`
+	Product        Product    `xml:"product"`
+	Parameters     Parameters `xml:"parameters"`
+	Path_oa_id     string
+	Path_auth_code string
 }
 
 func NewLic() (lic *License, err error) {
@@ -69,6 +63,16 @@ func NewLic() (lic *License, err error) {
 	}
 	log.Info().Msg("Unmarshal from XML file success!")
 	return lic, nil
+}
+
+func (l *License) PathOaId(oa_id string) *License {
+	l.Path_oa_id = oa_id
+	return l
+}
+
+func (l *License) PathAuthCode(auth_code string) *License {
+	l.Path_auth_code = auth_code
+	return l
 }
 
 func (l *License) XmlNs(code string) *License {
@@ -170,34 +174,34 @@ func (l *License) MaxEnbNum(max_enb_num uint) *License {
 	return l
 }
 
-func (l *License) ToXML(str string) (string, error) {
+func (l *License) ToXML() error {
 	output, err := xml.Marshal(l)
 	if err != nil {
 		//log.Fatal().Str("func", "ToXML()").Msg("Marshal error!")
 		log.Error().Err(err).Str("func", "ToXML()").Msg("Marshal error!")
-		return "", err
+		return err
 	}
 	//log.Debug().Msgf("New XML str:\n%s", string(output))
 	//path := conf.LicenseConf.Dst
 	//str := utils.CreateRandomString(6)
-	tmp_dir := DIR + "/" + str
+	tmp_dir := DIR + "/" + l.Path_oa_id + "/" + l.Path_auth_code
 	err = os.MkdirAll(tmp_dir, 0777) //此处未判断文件夹是否已经存在
 	if err != nil {
 		log.Error().Err(err).Str("func", "ToXML()").Msg("创建文件路径失败!")
-		return "", err
+		return err
 	}
 	out_xml := tmp_dir + "/" + XML_OUT
 	err = ioutil.WriteFile(out_xml, output, 0666)
 	if err != nil {
 		log.Error().Err(err).Str("func", "ToXML()").Msg("WriteFile error!")
-		return tmp_dir, err
+		return err
 	}
 	log.Info().Str("path", out_xml).Msg("Marshal to XML file success!")
-	return tmp_dir, nil
+	return nil
 }
 
-func GenLic(str string) error {
-	tmp_dir := DIR + "/" + str
+func (l *License) GenLic() error {
+	tmp_dir := DIR + "/" + l.Path_oa_id + "/" + l.Path_auth_code
 	out_exec := tmp_dir + "/" + EXEC
 	exec, _ := os.Create(out_exec)
 	os.Chmod(out_exec, 0755)
@@ -215,5 +219,11 @@ func GenLic(str string) error {
 	}
 	out_bin := tmp_dir + "/" + LIC_BIN
 	os.Rename(tmp_dir+"/"+XML_ENC, out_bin)
+	os.Remove(out_exec)
+	os.Remove(out_xml)
 	return nil
 }
+
+/*func (l *License) TarFile() error {
+    tmp_dir := DIR + "/" + l.Path_oa_id + "/" + l.Path_auth_code
+}*/

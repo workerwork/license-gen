@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	//"fmt"
 	"sync"
 	"time"
 )
@@ -32,7 +32,7 @@ func run() {
 				wg.Done()
 				return
 			}
-			fmt.Println(lic)
+			//fmt.Println(lic)
 			lic.XmlNs(data.Product).
 				Code(data.Product).
 				ProductVersion(item.Version).
@@ -40,10 +40,19 @@ func run() {
 				CreateTime().
 				TotalTime(item.Total_time).
 				MaxUeNum(item.Max_ue_num).
-				MaxEnbNum(item.Max_enb_num)
-			//fmt.Println(lic)
-			lic.ToXML(item.Auth_code)
-			GenLic(item.Auth_code)
+				MaxEnbNum(item.Max_enb_num).
+				PathOaId(data.Oa_id).
+				PathAuthCode(item.Auth_code)
+			if err := lic.ToXML(); err != nil {
+				lock.Unlock()
+				wg.Done()
+				return
+			}
+			if err := lic.GenLic(); err != nil {
+				lock.Unlock()
+				wg.Done()
+				return
+			}
 			lock.Unlock()
 			wg.Done()
 		}()

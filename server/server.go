@@ -22,6 +22,7 @@ func run() {
 	if err != nil {
 		return
 	}
+    /*
 	for _, item := range data.Item_list {
 		wg.Add(1)
 		lock.Lock()
@@ -58,5 +59,13 @@ func run() {
 		}()
 		wg.Wait()
 		//TODO
+	}*/
+	advise_result := AdviseResult{
+		Oa_id:         data.Oa_id,
+		Apply_type:    data.Apply_type,
+		Create_result: true,
+		File_name:     "test",
+		Msg:           "success",
 	}
+	ClientPostAdviseResult(advise_result)
 }

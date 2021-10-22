@@ -28,14 +28,18 @@ type license struct {
 var LicenseConf = &license{}
 
 // .env变量
-var URL string
+var URL_GET string
+var URL_POST1 string
+var URL_POST2 string
 
 // Setup 生成服务配置
 func Setup() {
 	// 读取.env配置
 	viper.SetConfigFile(".env")
 	viper.ReadInConfig()
-	URL = viper.GetString("URL")
+	URL_GET = viper.GetString("URL_GET")
+	URL_POST1 = viper.GetString("URL_POST1")
+	URL_POST2 = viper.GetString("URL_POST2")
     log.Println(".env parsed success!")
 
 	// 读取配置文件内容

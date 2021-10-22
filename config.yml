@@ -1,0 +1,11 @@
+# 日志配置
+logger:
+  level: DEBUG
+  pretty: true
+  color: true
+
+# License配置
+license:
+  exec: "assets/bin/licence"
+  src: "assets/xml/comm.xml"
+  bin: "assets/license.bin"

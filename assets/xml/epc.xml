@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<license xmlns="http://www.baicells.com/product/epc">
+    <product>
+        <code>BaiEPC-S</code>
+        <version>V100R002C00B030</version>
+        <auth_code>EB795BADB3D3C495AAB8543405EC4EEA38A0E604AA9D4343DDD0D068B533C09E</auth_code>
+    </product>
+    <parameters>
+        <version>1</version>
+        <type>2</type>
+        <expire_year>7</expire_year>
+        <expire_month>8</expire_month>
+        <expire_day>5</expire_day>
+        <max_ue_num>1000</max_ue_num>
+        <max_enb_num>100</max_enb_num>
+    </parameters>
+</license>

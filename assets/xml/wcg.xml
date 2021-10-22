@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<license xmlns="http://www.baicells.com/product/egw">
+    <product>
+        <code>BaiEGW</code>
+        <version>V100R001C00B100</version>
+        <auth_code>10950316BFA108640FB8B1850FAA1AF3289E1516E6D0CB0304A13B919868541D</auth_code>
+        <create_time>20210806</create_time>
+    </product>
+    <parameters>
+        <version>1</version>
+        <type>2</type>
+        <sn>1</sn>
+        <total_time>365</total_time>
+        <use_time>0</use_time>
+        <max_ue_num>50000</max_ue_num>
+        <max_enb_num>5000</max_enb_num>
+    </parameters>
+</license>

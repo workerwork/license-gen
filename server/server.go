@@ -2,6 +2,7 @@ package server
 
 import (
 	//"fmt"
+	"license-gen/conf"
 	"sync"
 	"time"
 )
@@ -12,7 +13,7 @@ var data = Data{}
 func Serve() {
 	for {
 		go run()
-		time.Sleep(time.Duration(2) * time.Second)
+		time.Sleep(conf.ServerConf.Timer * time.Second)
 	}
 }
 

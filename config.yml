@@ -9,3 +9,7 @@ license:
   exec: "assets/bin/licence"
   src: "assets/xml/comm.xml"
   bin: "assets/license.bin"
+
+# Server配置
+server:
+  timer: 2

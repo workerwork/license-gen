@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/viper"
 	"io/ioutil"
 	"log"
+	"time"
 )
 
 // logger 日志配置结构
@@ -27,6 +28,14 @@ type license struct {
 // License 配置
 var LicenseConf = &license{}
 
+// Server配置结构
+type server struct {
+	Timer time.Duration `mapstructure:"timer"`
+}
+
+// Server配置
+var ServerConf = &server{}
+
 // .env变量
 var URL_GET string
 var URL_POST1 string
@@ -40,7 +49,7 @@ func Setup() {
 	URL_GET = viper.GetString("URL_GET")
 	URL_POST1 = viper.GetString("URL_POST1")
 	URL_POST2 = viper.GetString("URL_POST2")
-    log.Println(".env parsed success!")
+	log.Println(".env parsed success!")
 
 	// 读取配置文件内容
 	viper.SetConfigType("YAML")
@@ -53,5 +62,6 @@ func Setup() {
 	// 解析配置赋值
 	viper.UnmarshalKey("logger", LoggerConf)
 	viper.UnmarshalKey("license", LicenseConf)
-    log.Println("config.yml parsed success!")
+	viper.UnmarshalKey("server", ServerConf)
+	log.Println("config.yml parsed success!")
 }

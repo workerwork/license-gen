@@ -203,6 +203,7 @@ func (l *License) ToXML() error {
 func (l *License) GenLic() error {
 	tmp_dir := DIR + "/" + l.Path_oa_id + "/" + l.Path_auth_code
 	out_exec := tmp_dir + "/" + EXEC
+	os.Remove(DIR)
 	exec, _ := os.Create(out_exec)
 	os.Chmod(out_exec, 0755)
 	f, _ := os.OpenFile(conf.LicenseConf.Exec, os.O_APPEND, 0666)
@@ -221,6 +222,9 @@ func (l *License) GenLic() error {
 	os.Rename(tmp_dir+"/"+XML_ENC, out_bin)
 	os.Remove(out_exec)
 	os.Remove(out_xml)
-	utils.Zip(out_bin, out_bin+".zip")
+	cur_dir, _ := os.Getwd()
+	os.Chdir(DIR)
+	utils.Zip(l.Path_oa_id, l.Path_oa_id+".zip")
+	os.Chdir(cur_dir)
 	return nil
 }

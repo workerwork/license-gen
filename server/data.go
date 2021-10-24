@@ -8,7 +8,10 @@ import (
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"license-gen/conf"
+	"license-gen/utils"
 	"net/http"
+	"strings"
+	"time"
 	"unsafe"
 )
 
@@ -54,6 +57,34 @@ func (data *Data) String() string {
 		return fmt.Sprintf("%+v", *data)
 	}
 	return out.String()
+}
+
+func (advise_result *AdviseResult) String() string {
+  b, err := json.Marshal(*advise_result)
+  if err != nil {
+    return fmt.Sprintf("%+v", *advise_result)
+  }
+  var out bytes.Buffer
+  err = json.Indent(&out, b, "", "    ")
+  if err != nil {
+    return fmt.Sprintf("%+v", *advise_result)
+  }
+  return out.String()
+}
+
+
+// 写log文件
+func (data Data) Log() {
+	timeLayoutStr := "2006-01-02 15:04:05"
+	timeStr := time.Now().Format(timeLayoutStr)
+	formatStr := strings.Repeat("*", 20)
+	str := fmt.Sprintf("%s%s%s\n%s\n", formatStr, timeStr, formatStr, data.String())
+	utils.WriteFile(conf.ServerConf.Log, str)
+}
+
+func (advise_result AdviseResult) Log() {
+	str := fmt.Sprintf("%s\n", advise_result.String())
+	utils.WriteFile(conf.ServerConf.Log, str)
 }
 
 func ClientGetInfo() (Data, error) {

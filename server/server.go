@@ -3,23 +3,12 @@ package server
 import (
 	"fmt"
 	"license-gen/conf"
-	"license-gen/utils"
-	"strings"
 	"sync"
 	"time"
 )
 
 var wg sync.WaitGroup
 var data = Data{}
-
-// 写log文件
-func Log(data Data) {
-	timeLayoutStr := "2006-01-02 15:04:05"
-	timeStr := time.Now().Format(timeLayoutStr)
-	formatStr := strings.Repeat("*", 20)
-	str := fmt.Sprintf("%s%s%s\n%s\n", formatStr, timeStr, formatStr, data.String())
-	utils.WriteFile(conf.ServerConf.Log, str)
-}
 
 func Serve() {
 	for {
@@ -32,12 +21,25 @@ func run() {
 	data, err := ClientGetInfo()
 	if err != nil {
 		return
+	} else {
+		data.Log()
 	}
+	// response msg
+	advise_result := AdviseResult{
+		Oa_id:         data.Oa_id,
+		Apply_type:    data.Apply_type,
+		Create_result: false,
+		File_name:     "",
+		Msg:           "",
+	}
+	//result := make(map[string]string)
+	//slice := make([]string, len(data.Item_list))
 	for _, item := range data.Item_list {
 		wg.Add(1)
 		go func() {
 			lic, err := NewLic()
 			if err != nil {
+				advise_result.Msg += fmt.Sprintf("%s: License gen failed!\n", item.Auth_code)
 				wg.Done()
 				return
 			}
@@ -52,25 +54,24 @@ func run() {
 				PathOaId(data.Oa_id).
 				PathAuthCode(item.Auth_code)
 			if err := lic.ToXML(); err != nil {
+				advise_result.Msg += fmt.Sprintf("%s:License gen failed! ", item.Auth_code)
 				wg.Done()
 				return
 			}
 			if err := lic.GenLic(); err != nil {
+				advise_result.Msg += fmt.Sprintf("%s:License gen failed! ", item.Auth_code)
 				wg.Done()
 				return
 			}
+			advise_result.Create_result = true
+			advise_result.File_name = data.Oa_id + ".zip"
 			wg.Done()
 		}()
 		wg.Wait()
-		//TODO
-		Log(data)
+		if advise_result.Msg == "" {
+			advise_result.Msg = "success"
+		}
 	}
-	advise_result := AdviseResult{
-		Oa_id:         data.Oa_id,
-		Apply_type:    data.Apply_type,
-		Create_result: true,
-		File_name:     "test",
-		Msg:           "success",
-	}
+	advise_result.Log()
 	ClientPostAdviseResult(advise_result)
 }

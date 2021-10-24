@@ -208,6 +208,7 @@ func ClientUploadLicenseFile(data Data) error {
 }*/
 
 func ClientUploadLicense(data Data) error {
+	result_code := ResultCode{}
 	params := make(map[string]string)
 	params["oa_id"] = data.Oa_id
 	params["apply_type"] = data.Apply_type
@@ -237,6 +238,28 @@ func ClientUploadLicense(data Data) error {
 	request.Header.Set("Content-Type", writer.FormDataContentType())
 	client := &http.Client{}
 	resp, err := client.Do(request)
-	fmt.Println(resp)
-	return err
+	if resp.StatusCode == 200 {
+		respBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Error().Err(err).Str("func", "ioutil.ReadAll()").Msg("IO error!")
+			return err
+		}
+
+		err = json.Unmarshal(respBytes, &result_code)
+		if err != nil {
+			log.Debug().Str("func", "json.Unmarshal()").Msg("Unmarshal error!")
+			return err
+		} else {
+			log.Info().Msgf("Get data from %s: %+v", conf.URL_POST2, result_code)
+		}
+	} else {
+		log.Error().Msg("http response error!")
+		return err
+	}
+	if result_code.Result_code != 2000 {
+		return errors.New("Server response err!")
+	}
+	defer resp.Body.Close()
+	return nil
+
 }

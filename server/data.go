@@ -13,7 +13,10 @@ import (
 	"strings"
 	"time"
 	//"unsafe"
-	"net/url"
+	"mime/multipart"
+	//"net/url"
+	"io"
+	"os"
 )
 
 type Data struct {
@@ -167,12 +170,13 @@ func ClientPostAdviseResult(advise_result AdviseResult) error {
 	//return str
 }
 
+/*
 func ClientUploadLicenseFile(data Data) error {
 	result_code := ResultCode{}
 	form := make(url.Values)
 	form["oa_id"] = []string{data.Oa_id}
 	form["apply_type"] = []string{data.Apply_type}
-	form["uploadFile"] = []string{DIR + "/" + data.Oa_id + ".zip"}
+	form["uploadFile"] = []os.File{DIR + "/" + data.Oa_id + ".zip"}
 	resp, err := http.PostForm(conf.URL_POST2, form)
 	if err != nil {
 		log.Error().Err(err).Str("func", "http.PostForm()").Msg("http error!")
@@ -201,4 +205,38 @@ func ClientUploadLicenseFile(data Data) error {
 	}
 	defer resp.Body.Close()
 	return nil
+}*/
+
+func ClientUploadLicense(data Data) error {
+	params := make(map[string]string)
+	params["oa_id"] = data.Oa_id
+	params["apply_type"] = data.Apply_type
+	path := DIR + "/" + data.Oa_id + ".zip"
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("bin", path)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(part, file)
+
+	for key, val := range params {
+		_ = writer.WriteField(key, val)
+	}
+	err = writer.Close()
+	if err != nil {
+		return err
+	}
+	request, err := http.NewRequest("POST", conf.URL_POST2, body)
+	request.Header.Set("Content-Type", writer.FormDataContentType())
+	client := &http.Client{}
+	resp, err := client.Do(request)
+	fmt.Println(resp)
+	return err
 }

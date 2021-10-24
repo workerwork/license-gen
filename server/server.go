@@ -1,14 +1,25 @@
 package server
 
 import (
-	//"fmt"
+	"fmt"
 	"license-gen/conf"
+	"license-gen/utils"
+	"strings"
 	"sync"
 	"time"
 )
 
 var wg sync.WaitGroup
 var data = Data{}
+
+// 写log文件
+func Log(data Data) {
+	timeLayoutStr := "2006-01-02 15:04:05"
+	timeStr := time.Now().Format(timeLayoutStr)
+	formatStr := strings.Repeat("*", 20)
+	str := fmt.Sprintf("%s%s%s\n%s\n", formatStr, timeStr, formatStr, data.String())
+	utils.WriteFile(conf.ServerConf.Log, str)
+}
 
 func Serve() {
 	for {
@@ -30,7 +41,6 @@ func run() {
 				wg.Done()
 				return
 			}
-			//fmt.Println(lic)
 			lic.XmlNs(data.Product).
 				Code(data.Product).
 				ProductVersion(item.Version).
@@ -53,6 +63,7 @@ func run() {
 		}()
 		wg.Wait()
 		//TODO
+		Log(data)
 	}
 	advise_result := AdviseResult{
 		Oa_id:         data.Oa_id,

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"archive/zip"
+	//"bufio"
 	"bytes"
 	"crypto/rand"
 	"fmt"
@@ -148,4 +149,27 @@ func Unzip(zipFile string, destDir string) error {
 		}
 	}
 	return nil
+}
+
+func WriteFile(path string, buf string) {
+	var f *os.File
+	var err error
+	if len(buf) == 0 {
+		return
+	}
+	if !CheckFileIsExist(path) {
+		f, err = os.Create(path)
+	} else {
+		f, err = os.OpenFile(path, os.O_WRONLY|os.O_APPEND, 0666)
+	}
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	//使用完毕，需要关闭文件
+	defer f.Close()
+	_, err = f.WriteString(buf)
+	if err != nil {
+		fmt.Println("err = ", err)
+	}
 }

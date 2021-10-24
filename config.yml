@@ -13,3 +13,4 @@ license:
 # Server配置
 server:
   timer: 2
+  log: "license.log"

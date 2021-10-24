@@ -31,6 +31,7 @@ var LicenseConf = &license{}
 // Server配置结构
 type server struct {
 	Timer time.Duration `mapstructure:"timer"`
+	Log   string        `mapstructure:"log"`
 }
 
 // Server配置

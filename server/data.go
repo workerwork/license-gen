@@ -43,6 +43,19 @@ type AdviseResult struct {
 	Msg           string `json:"msg"`
 }
 
+func (data *Data) String() string {
+	b, err := json.Marshal(*data)
+	if err != nil {
+		return fmt.Sprintf("%+v", *data)
+	}
+	var out bytes.Buffer
+	err = json.Indent(&out, b, "", "    ")
+	if err != nil {
+		return fmt.Sprintf("%+v", *data)
+	}
+	return out.String()
+}
+
 func ClientGetInfo() (Data, error) {
 	data := Data{}
 	client := &http.Client{}

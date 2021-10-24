@@ -76,6 +76,7 @@ func run() {
 	if err := ClientPostAdviseResult(advise_result); err != nil {
 		return
 	}
-	//ClientUploadLicenseFile(data)
-	ClientUploadLicense(data)
+	if err := ClientUploadLicense(data); err != nil {
+		return
+	}
 }

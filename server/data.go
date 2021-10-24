@@ -170,43 +170,6 @@ func ClientPostAdviseResult(advise_result AdviseResult) error {
 	//return str
 }
 
-/*
-func ClientUploadLicenseFile(data Data) error {
-	result_code := ResultCode{}
-	form := make(url.Values)
-	form["oa_id"] = []string{data.Oa_id}
-	form["apply_type"] = []string{data.Apply_type}
-	form["uploadFile"] = []os.File{DIR + "/" + data.Oa_id + ".zip"}
-	resp, err := http.PostForm(conf.URL_POST2, form)
-	if err != nil {
-		log.Error().Err(err).Str("func", "http.PostForm()").Msg("http error!")
-		return err
-	}
-	if resp.StatusCode == 200 {
-		respBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Error().Err(err).Str("func", "ioutil.ReadAll()").Msg("IO error!")
-			return err
-		}
-
-		err = json.Unmarshal(respBytes, &result_code)
-		if err != nil {
-			log.Debug().Str("func", "json.Unmarshal()").Msg("Unmarshal error!")
-			return err
-		} else {
-			log.Info().Msgf("Get data from %s: %+v", conf.URL_POST2, result_code)
-		}
-	} else {
-		log.Error().Msg("http response error!")
-		return err
-	}
-	if result_code.Result_code != 2000 {
-		return errors.New("Server response err!")
-	}
-	defer resp.Body.Close()
-	return nil
-}*/
-
 func ClientUploadLicense(data Data) error {
 	result_code := ResultCode{}
 	params := make(map[string]string)
@@ -221,7 +184,7 @@ func ClientUploadLicense(data Data) error {
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile("bin", path)
+	part, err := writer.CreateFormFile("uploadFile", path)
 	if err != nil {
 		return err
 	}
@@ -261,5 +224,4 @@ func ClientUploadLicense(data Data) error {
 	}
 	defer resp.Body.Close()
 	return nil
-
 }

@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 	//"unsafe"
+	"net/url"
 )
 
 type Data struct {
@@ -166,4 +167,18 @@ func ClientPostAdviseResult(advise_result AdviseResult) error {
 	//return str
 }
 
-func ClientUploadLicenseFile() {}
+func ClientUploadLicenseFile(data Data) error {
+	form := make(url.Values)
+	form["oa_id"] = []string{data.Oa_id}
+	form["apply_type"] = []string{data.Apply_type}
+	form["uploadFile"] = []string{DIR + "/" + data.Oa_id + ".zip"}
+
+	fmt.Println(form)
+	res, err := http.PostForm(conf.URL_POST2, form)
+	if err != nil {
+		log.Error().Err(err).Str("func", "http.PostForm()").Msg("http error!")
+		return err
+	}
+	defer res.Body.Close()
+	return nil
+}

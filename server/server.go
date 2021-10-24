@@ -73,5 +73,7 @@ func run() {
 		}
 	}
 	advise_result.Log()
-	ClientPostAdviseResult(advise_result)
+	if err := ClientPostAdviseResult(advise_result); err != nil {
+		return
+	}
 }

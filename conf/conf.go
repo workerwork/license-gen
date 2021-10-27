@@ -50,7 +50,7 @@ func Setup() {
 	URL_GET = viper.GetString("URL_GET")
 	URL_POST1 = viper.GetString("URL_POST1")
 	URL_POST2 = viper.GetString("URL_POST2")
-	log.Println(".env parsed success!")
+	//log.Println(".env parsed success!")
 
 	// 读取配置文件内容
 	viper.SetConfigType("YAML")
@@ -64,5 +64,5 @@ func Setup() {
 	viper.UnmarshalKey("logger", LoggerConf)
 	viper.UnmarshalKey("license", LicenseConf)
 	viper.UnmarshalKey("server", ServerConf)
-	log.Println("config.yml parsed success!")
+	//log.Println("config.yml parsed success!")
 }

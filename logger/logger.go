@@ -37,5 +37,5 @@ func Setup() {
 			NoColor:    !conf.LoggerConf.Color,
 		})
 	}
-	log.Info().Msg("logger on work now!")
+	//log.Info().Msg("logger on work now!")
 }

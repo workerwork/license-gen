@@ -55,33 +55,36 @@ type ResultCode struct {
 	Message     string `json:"message"`
 }
 
+// @function String
+// @description 格式化输出Data结构实例
+// @param *Data
+// @return string
 func (data *Data) String() string {
-	b, err := json.Marshal(*data)
-	if err != nil {
-		return fmt.Sprintf("%+v", *data)
+	str, err := utils.OutString(data)
+	if err == nil {
+		log.Error().Err(err).Str("func", "utils.OutString()").Msg("marshal error!")
+		return ""
 	}
-	var out bytes.Buffer
-	err = json.Indent(&out, b, "", "    ")
-	if err != nil {
-		return fmt.Sprintf("%+v", *data)
-	}
-	return out.String()
+	return str
 }
 
+// @function String
+// @description 格式化输出AdviseResult结构实例
+// @param *AdviseResult
+// @return string
 func (advise_result *AdviseResult) String() string {
-	b, err := json.Marshal(*advise_result)
-	if err != nil {
-		return fmt.Sprintf("%+v", *advise_result)
+	str, err := utils.OutString(advise_result)
+	if err == nil {
+		log.Error().Err(err).Str("func", "utils.OutString()").Msg("marshal error!")
+		return ""
 	}
-	var out bytes.Buffer
-	err = json.Indent(&out, b, "", "    ")
-	if err != nil {
-		return fmt.Sprintf("%+v", *advise_result)
-	}
-	return out.String()
+	return str
 }
 
-// 写log文件
+// @function Log
+// @description 记录Data结构实例到指定路径
+// @param Data
+// @return ""
 func (data Data) Log() {
 	timeLayoutStr := "2006-01-02 15:04:05"
 	timeStr := time.Now().Format(timeLayoutStr)
@@ -90,15 +93,26 @@ func (data Data) Log() {
 	utils.WriteFile(conf.ServerConf.Log, str)
 }
 
+// @function Log
+// @description 记录AdviseResult结构实例到指定路径
+// @param AdviseResult
+// @return ""
 func (advise_result AdviseResult) Log() {
 	str := fmt.Sprintf("%s\n", advise_result.String())
 	utils.WriteFile(conf.ServerConf.Log, str)
 }
 
+// @function ClientGetInfo
+// @description 获取data数据
+// @param ""
+// @return Data, error
 func ClientGetInfo() (Data, error) {
 	data := Data{}
 	client := &http.Client{}
-	request, _ := http.NewRequest("GET", conf.URL_GET, nil)
+	request, err := http.NewRequest("GET", conf.URL_GET, nil)
+	if err != nil {
+		log.Error().Err(err).Str("func", "http.NewRequest()").Msg("http error!")
+	}
 	request.Header.Set("Connection", "keep-alive")
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
 	response, err := client.Do(request)
@@ -112,7 +126,6 @@ func ClientGetInfo() (Data, error) {
 			log.Error().Err(err).Str("func", "ioutil.ReadAll()").Msg("IO error!")
 			return Data{}, err
 		}
-		//fmt.Println(string(body))
 		err = json.Unmarshal(body, &data)
 		if err != nil {
 			log.Debug().Str("func", "json.Unmarshal()").Msg("Unmarshal error!")
@@ -126,6 +139,10 @@ func ClientGetInfo() (Data, error) {
 	return Data{}, errors.New("http something is wrong!")
 }
 
+// @function ClientPostAdviseResult
+// @description 返回License制作结果
+// @param AdviseResult
+// @return error
 func ClientPostAdviseResult(advise_result AdviseResult) error {
 	result_code := ResultCode{}
 	bytesData, err := json.Marshal(&advise_result)
@@ -146,7 +163,6 @@ func ClientPostAdviseResult(advise_result AdviseResult) error {
 		log.Error().Err(err).Str("func", "client.Do()").Msg("http error!")
 		return err
 	}
-	//fmt.Println(resp.StatusCode)
 	if resp.StatusCode == 200 {
 		respBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -174,6 +190,10 @@ func ClientPostAdviseResult(advise_result AdviseResult) error {
 	//return str
 }
 
+// @function ClientUploadLicense
+// @description 上传License文件
+// @param Data
+// @return error
 func ClientUploadLicense(data Data) error {
 	result_code := ResultCode{}
 	params := make(map[string]string)

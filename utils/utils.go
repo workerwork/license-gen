@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+  "encoding/json"
 )
 
 /**
@@ -172,4 +173,17 @@ func WriteFile(path string, buf string) {
 	if err != nil {
 		fmt.Println("err = ", err)
 	}
+}
+
+func OutString(d interface{}) (string, error) {
+	b, err := json.Marshal(d)
+	if err != nil {
+		return "", err
+	}
+	var out bytes.Buffer
+	err = json.Indent(&out, b, "", "    ")
+	if err != nil {
+		return "", err
+	}
+	return out.String(), nil
 }

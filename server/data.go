@@ -61,8 +61,8 @@ type ResultCode struct {
 // @return string
 func (data *Data) String() string {
 	str, err := utils.OutString(data)
-	if err == nil {
-		log.Error().Err(err).Str("func", "utils.OutString()").Msg("marshal error!")
+	if err != nil {
+		log.Error().Err(err).Str("func", "Data::utils.OutString()").Msg("marshal error!")
 		return ""
 	}
 	return str
@@ -74,8 +74,8 @@ func (data *Data) String() string {
 // @return string
 func (advise_result *AdviseResult) String() string {
 	str, err := utils.OutString(advise_result)
-	if err == nil {
-		log.Error().Err(err).Str("func", "utils.OutString()").Msg("marshal error!")
+	if err != nil {
+		log.Error().Err(err).Str("func", "AdviseResult::utils.OutString()").Msg("marshal error!")
 		return ""
 	}
 	return str
@@ -125,6 +125,10 @@ func ClientGetInfo() (Data, error) {
 		if err != nil {
 			log.Error().Err(err).Str("func", "ioutil.ReadAll()").Msg("IO error!")
 			return Data{}, err
+		}
+		if len(body) == 0 {
+			log.Debug().Msg("can't get data from server yet!")
+			return data, errors.New("can't get data from server yet!")
 		}
 		err = json.Unmarshal(body, &data)
 		if err != nil {

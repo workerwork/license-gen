@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"license-gen/conf"
+	"time"
 )
 
 // Setup 日志初始化设置
@@ -27,12 +28,14 @@ func Setup() {
 	default:
 		zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	}
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	//zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	//zerolog.TimeFieldFormat = time.RFC3339
 	if conf.LoggerConf.Pretty {
 		log.Logger = log.Output(zerolog.ConsoleWriter{
-			Out:     os.Stderr,
-			NoColor: !conf.LoggerConf.Color,
+			Out:        os.Stderr,
+			TimeFormat: time.RFC3339,
+			NoColor:    !conf.LoggerConf.Color,
 		})
 	}
-    log.Info().Msg("logger on work now!")
+	log.Info().Msg("logger on work now!")
 }

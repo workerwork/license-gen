@@ -101,7 +101,11 @@ func ClientGetInfo() (Data, error) {
 	request, _ := http.NewRequest("GET", conf.URL_GET, nil)
 	request.Header.Set("Connection", "keep-alive")
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
-	response, _ := client.Do(request)
+	response, err := client.Do(request)
+	if err != nil {
+		log.Error().Err(err).Str("func", "client.Do()").Msg("http error!")
+		return Data{}, err
+	}
 	if response.StatusCode == 200 {
 		body, err := ioutil.ReadAll(response.Body)
 		if err != nil {
